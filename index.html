@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Sebastián Escalona – Tienda</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100">
+  <!-- ENCABEZADO -->
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+      <h1 class="text-3xl font-bold text-slate-800">Sebastián Escalona</h1>
+      <button id="abrirCarrito"
+              class="relative bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        <span id="contadorCarrito">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- CATEGORÍAS -->
+  <nav class="max-w-7xl mx-auto px-4 mt-4">
+    <div class="flex space-x-2 flex-wrap">
+      <button class="categoria-btn bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm"
+              data-cat="todos">Todos</button>
+      <button class="categoria-btn bg-slate-200 px-3 py-1 rounded-full text-sm"
+              data-cat="ropa">Ropa</button>
+      <button class="categoria-btn bg-slate-200 px-3 py-1 rounded-full text-sm"
+              data-cat="accesorios">Accesorios</button>
+      <button class="categoria-btn bg-slate-200 px-3 py-1 rounded-full text-sm"
+              data-cat="electronica">Electrónica</button>
+      <button class="categoria-btn bg-slate-200 px-3 py-1 rounded-full text-sm"
+              data-cat="hogar">Hogar</button>
+       <button class="categoria-btn bg-slate-200 px-3 py-1 rounded-full text-sm"
+              data-cat="auto">auto</button>
+    </div>
+  </nav>
+
+  <!-- CATÁLOGO -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <div id="catalogo" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- productos -->
+    </div>
+  </main>
+
+  <!-- MODAL CARRITO -->
+  <div id="modalCarrito"
+       class="fixed inset-0 bg-black bg-opacity-50 hidden z-40 flex justify-center items-start pt-20">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+      <div class="flex justify-between items-center p-4 border-b">
+        <h2 class="text-xl font-bold">Tu carrito</h2>
+        <button id="cerrarCarrito" class="text-slate-500 hover:text-black">✕</button>
+      </div>
+      <div id="itemsCarrito" class="p-4 max-h-96 overflow-y-auto"></div>
+      <div class="p-4 border-t">
+        <div class="flex justify-between font-bold text-lg">
+          <span>Total</span>
+          <span id="totalCarrito">$0</span>
+        </div>
+        <button id="btnWsp"
+                class="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
+          Enviar pedido por WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const productos = [
+      { id: 1, nombre: "Poleras primera capa talla M", precio: 10000, cat: "ropa", img: "Men-Shirts-Custom-Breathable-Fitness-Bodybuilding-Long-Sleeve-Shirt-Muscle-Men-Sport-Running-T-Shirt.webp" },
+      { id: 2, nombre: "Gomas para piso auto", precio: 10000, cat: "auto", img: "blob.jpg" },
+      { id: 3, nombre: "Grameras", precio: 7000, cat: "hogar", img: "D_NQ_NP_961232-MLC43308708812_082020-O.webp" },
+      { id: 4, nombre: "Billetera (solo negro)", precio: 4000, cat: "accesorios", img: "https://images.unsplash.com/photo-1607706189992-eae578626c85?auto=format&fit=crop&w=500&q=60" },
+      { id: 5, nombre: "Parlantes 6.5 pulgadas (el par)", precio: 35000, cat: "auto", img: "parlantes.jpg" },
+      { id: 6, nombre: "Transmisores FM Bluetooth", precio: 7000, cat: "auto", img: "Tramisorbluto.webp" },
+      { id: 7, nombre: "Audífonos inalámbricos", precio: 9000, cat: "electronica", img: "audifonos.webp" },
+      { id: 7, nombre: "H4 18000Lm", precio: 23000, cat: "auto", img: "h4.jpg" }
+    ];
+
+    let carrito = [];
+    let categoriaActiva = "todos";
+
+    // RENDER
+    function renderCatalogo() {
+      const catalogo = document.getElementById("catalogo");
+      const filtro = categoriaActiva === "todos" ? productos : productos.filter(p => p.cat === categoriaActiva);
+      catalogo.innerHTML = filtro.map(p => `
+        <div class="bg-white rounded-lg shadow flex flex-col">
+          <img src="${p.img}" class="rounded-t-lg object-cover h-48 w-full"/>
+          <div class="p-4 flex flex-col flex-grow">
+            <h3 class="font-semibold text-slate-800 mb-1">${p.nombre}</h3>
+            <p class="text-indigo-600 font-bold mb-3">$${p.precio.toLocaleString()}</p>
+            <button onclick="agregarAlCarrito(${p.id})"
+                    class="mt-auto w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">
+              Agregar
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function agregarAlCarrito(id) {
+      const producto = productos.find(p => p.id === id);
+      const item = carrito.find(c => c.id === id);
+      item ? item.cantidad++ : carrito.push({ ...producto, cantidad: 1 });
+      actualizarCarrito();
+    }
+
+    function cambiarCantidad(id, delta) {
+      const item = carrito.find(c => c.id === id);
+      if (!item) return;
+      item.cantidad += delta;
+      if (item.cantidad <= 0) carrito = carrito.filter(c => c.id !== id);
+      actualizarCarrito();
+    }
+
+    function actualizarCarrito() {
+      document.getElementById("contadorCarrito").textContent = carrito.reduce((s, i) => s + i.cantidad, 0);
+      const items = document.getElementById("itemsCarrito");
+      if (carrito.length === 0) {
+        items.innerHTML = "<p class='text-slate-500'>Tu carrito está vacío</p>";
+      } else {
+        items.innerHTML = carrito.map(item => `
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="font-semibold">${item.nombre}</p>
+              <p class="text-sm text-slate-600">$${item.precio.toLocaleString()} c/u</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="cambiarCantidad(${item.id}, -1)" class="px-2 border rounded">-</button>
+              <span>${item.cantidad}</span>
+              <button onclick="cambiarCantidad(${item.id}, 1)" class="px-2 border rounded">+</button>
+            </div>
+          </div>
+        `).join('');
+      }
+      const total = carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+      document.getElementById("totalCarrito").textContent = "$" + total.toLocaleString();
+    }
+
+    // FILTRO CATEGORÍAS
+    document.querySelectorAll(".categoria-btn").forEach(btn =>
+      btn.addEventListener("click", e => {
+        document.querySelectorAll(".categoria-btn").forEach(b => b.className = "categoria-btn bg-slate-200 px-3 py-1 rounded-full text-sm");
+        e.target.className = "categoria-btn bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm";
+        categoriaActiva = e.target.dataset.cat;
+        renderCatalogo();
+      })
+    );
+
+    // WHATSAPP
+    document.getElementById("btnWsp").addEventListener("click", () => {
+      if (carrito.length === 0) return alert("Tu carrito está vacío");
+      const numero = "+56962654265"; // <--- TU NÚMERO AQUÍ
+      let texto = "Hola Sebastián, quiero realizar el siguiente pedido:\n\n";
+      carrito.forEach(item => {
+        texto += `• ${item.nombre} x${item.cantidad} = $${(item.precio * item.cantidad).toLocaleString()}\n`;
+      });
+      const total = carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+      texto += `\n*Total: $${total.toLocaleString()}*`;
+      const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+      window.open(url, "_blank");
+    });
+
+    // MODAL
+    document.getElementById("abrirCarrito").onclick = () => document.getElementById("modalCarrito").classList.remove("hidden");
+    document.getElementById("cerrarCarrito").onclick = () => document.getElementById("modalCarrito").classList.add("hidden");
+
+    // INIT
+    renderCatalogo();
+    actualizarCarrito();
+  </script>
+</body>
+</html>
